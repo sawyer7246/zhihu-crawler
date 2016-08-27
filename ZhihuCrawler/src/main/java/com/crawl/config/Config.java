@@ -56,11 +56,13 @@ public class Config {
      * 创建href表语句
      */
     public static String createHrefTable;
-
     /**
      * 创建user表语句
      */
     public static String createUserTable;
+    public static boolean distributedEnable;
+    public static String brokerURL;
+    public static String queueName;
     static {
         Properties p = new Properties();
         try {
@@ -75,6 +77,7 @@ public class Config {
         startURL = p.getProperty("startURL");
         downloadPageCount = Integer.valueOf(p.getProperty("downloadPageCount"));
         downloadThreadSize = Integer.valueOf(p.getProperty("downloadThreadSize"));
+        distributedEnable = Boolean.parseBoolean(p.getProperty("distributedEnable"));
         if (dbEnable){
             dbName = p.getProperty("db.name");
             dbHost = p.getProperty("db.host");
@@ -82,6 +85,10 @@ public class Config {
             dbPassword = p.getProperty("db.password");
             createHrefTable = p.getProperty("createHrefTable");
             createUserTable = p.getProperty("createUserTable");
+        }
+        if (distributedEnable){
+            brokerURL = p.getProperty("brokerURL");
+            queueName = p.getProperty("queueName");
         }
     }
 
