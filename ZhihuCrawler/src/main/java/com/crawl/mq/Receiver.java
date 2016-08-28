@@ -16,8 +16,9 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 
 public class Receiver {
     public static void main(String[] args) {
-        // ConnectionFactory ：连接工厂，JMS 用它创建连接
-        ConnectionFactory connectionFactory;
+        receiverMessage();
+    }
+    public static void receiverMessage(){
         // Connection ：JMS 客户端到JMS Provider 的连接
         Connection connection = null;
         // Session： 一个发送或接收消息的线程
@@ -26,13 +27,8 @@ public class Receiver {
         Destination destination;
         // 消费者，消息接收者
         MessageConsumer consumer;
-        connectionFactory = new ActiveMQConnectionFactory(
-                ActiveMQConnection.DEFAULT_USER,
-                ActiveMQConnection.DEFAULT_PASSWORD,
-                Config.brokerURL);
         try {
-            // 构造从工厂得到连接对象
-            connection = connectionFactory.createConnection();
+            connection = MQConnectionManage.createConnection();
             // 启动
             connection.start();
             // 获取操作连接

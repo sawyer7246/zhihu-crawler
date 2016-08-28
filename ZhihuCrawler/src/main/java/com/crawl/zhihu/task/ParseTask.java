@@ -5,6 +5,7 @@ import com.crawl.dao.ConnectionManage;
 import com.crawl.dao.ZhiHuDAO;
 import com.crawl.entity.Page;
 import com.crawl.entity.User;
+import com.crawl.mq.Sender;
 import com.crawl.parser.zhihu.ZhiHuUserFollowingListPageParser;
 import com.crawl.parser.zhihu.ZhiHuUserIndexDetailPageParser;
 import com.crawl.util.Md5Util;
@@ -50,6 +51,11 @@ public class ParseTask implements Runnable {
             parseUserCount.incrementAndGet();
             logger.info("解析用户成功:" + u.toString());
             for(int i = 0;i < u.getFollowees()/20 + 1;i++) {
+                String userFolloweesUrl = formatUserFolloweesUrl(20*i, u.getHashId());
+                /**
+                 * url发送到mq
+                 */
+                Sender.sendMessage(userFolloweesUrl);
                 /**
                  * 当下载网页队列小于100时才获取该用户关注用户
                  * 防止下载网页线程池任务队列过量增长
@@ -58,7 +64,6 @@ public class ParseTask implements Runnable {
                     /**
                      * 获取关注用户列表,因为知乎每次最多返回20个关注用户
                      */
-                    String userFolloweesUrl = formatUserFolloweesUrl(20*i, u.getHashId());
                     handleUrl(userFolloweesUrl);
                 }
             }
@@ -70,6 +75,10 @@ public class ParseTask implements Runnable {
             if(!isStopDownload && zhiHuHttpClient.getDownloadThreadExecutor().getQueue().size() <= 100){
                 List<String> userIndexHref = ZhiHuUserFollowingListPageParser.getInstance().parse(page);
                 for(String url : userIndexHref){
+                    /**
+                     * url发送到mq
+                     */
+                    Sender.sendMessage(url);
                     handleUrl(url);
                 }
             }
