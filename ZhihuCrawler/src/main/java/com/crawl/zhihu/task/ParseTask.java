@@ -51,11 +51,10 @@ public class ParseTask implements Runnable {
             parseUserCount.incrementAndGet();
             logger.info("解析用户成功:" + u.toString());
             for(int i = 0;i < u.getFollowees()/20 + 1;i++) {
-                String userFolloweesUrl = formatUserFolloweesUrl(20*i, u.getHashId());
                 /**
-                 * url发送到mq
+                 * 获取关注用户
                  */
-                Sender.sendMessage(userFolloweesUrl);
+                String userFolloweesUrl = formatUserFolloweesUrl(20*i, u.getHashId());
                 /**
                  * 当下载网页队列小于100时才获取该用户关注用户
                  * 防止下载网页线程池任务队列过量增长
@@ -75,10 +74,6 @@ public class ParseTask implements Runnable {
             if(!isStopDownload && zhiHuHttpClient.getDownloadThreadExecutor().getQueue().size() <= 100){
                 List<String> userIndexHref = ZhiHuUserFollowingListPageParser.getInstance().parse(page);
                 for(String url : userIndexHref){
-                    /**
-                     * url发送到mq
-                     */
-                    Sender.sendMessage(url);
                     handleUrl(url);
                 }
             }

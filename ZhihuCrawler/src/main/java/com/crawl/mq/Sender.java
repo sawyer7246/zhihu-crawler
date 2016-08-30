@@ -2,6 +2,7 @@ package com.crawl.mq;
 
 /**
  * Created by Administrator on 2016/8/27 0027.
+ * 发送消息
  */
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
@@ -20,9 +21,13 @@ import org.apache.log4j.Logger;
 public class Sender {
     private static Logger logger = MyLogger.getLogger(Sender.class);
     public static void main(String[] args) {
-        sendMessage("test");
+        sendMessage("test", Config.queueName);
     }
-    public static void sendMessage(String url){
+    /**
+     * @param url 消息内容,待爬取url
+     * @param queueName 消息队列名
+     */
+    public static void sendMessage(String url, String queueName){
         // Connection ：JMS 客户端到JMS Provider 的连接
         Connection connection = MQConnectionManage.createConnection();
         // Session： 一个发送或接收消息的线程
@@ -34,16 +39,12 @@ public class Sender {
         try {
             // 启动
             connection.start();
-            // 获取操作连接
             session = connection.createSession(Boolean.TRUE,
                     Session.AUTO_ACKNOWLEDGE);
-            // 获取session注意参数值xingbo.xu-queue是一个服务器的queue，须在在ActiveMq的console配置
-            destination = session.createQueue(Config.queueName);
-            // 得到消息生成者【发送者】
+            destination = session.createQueue(queueName);
             producer = session.createProducer(destination);
-            // 设置不持久化，此处学习，实际根据项目决定
+            // 设置不持久化
             producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
-            // 构造消息，此处写死，项目就是参数，或者方法获取
             TextMessage message = session.createTextMessage(url);
             producer.send(message);
             session.commit();

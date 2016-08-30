@@ -74,7 +74,7 @@ public class ZhiHuHttpClient extends HttpClient{
 
     /**
      * 管理知乎客户端
-     * 关闭整个爬虫
+     * 负责正常关闭
      */
     public void manageZhiHuClient(){
         while (true) {

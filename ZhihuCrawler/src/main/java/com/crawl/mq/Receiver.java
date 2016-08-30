@@ -2,23 +2,23 @@ package com.crawl.mq;
 
 /**
  * Created by Administrator on 2016/8/27 0027.
+ * 接收消息
  */
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
-import javax.jms.MessageConsumer;
-import javax.jms.Session;
-import javax.jms.TextMessage;
+import javax.jms.*;
 
 import com.crawl.config.Config;
+import com.crawl.util.MyLogger;
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.log4j.Logger;
 
 public class Receiver {
+    public static Logger logger = MyLogger.getMyLogger(Receiver.class);
     public static void main(String[] args) {
-        receiverMessage();
+        receiverMessage(Config.queueName);
+
     }
-    public static void receiverMessage(){
+    public static void receiverMessage(String queueName){
         // Connection ：JMS 客户端到JMS Provider 的连接
         Connection connection = null;
         // Session： 一个发送或接收消息的线程
@@ -34,18 +34,19 @@ public class Receiver {
             // 获取操作连接
             session = connection.createSession(Boolean.FALSE,
                     Session.AUTO_ACKNOWLEDGE);
-            // 获取session注意参数值xingbo.xu-queue是一个服务器的queue，须在在ActiveMq的console配置
-            destination = session.createQueue(Config.queueName);
+            destination = session.createQueue(queueName);
             consumer = session.createConsumer(destination);
+            logger.info("消息接收中");
             while (true) {
-                //设置接收者接收消息的时间，为了便于测试，这里谁定为100s
-                TextMessage message = (TextMessage) consumer.receive(100000);
+                TextMessage message = (TextMessage) consumer.receive(10000);
                 if (null != message) {
-                    System.out.println("收到消息" + message.getText());
+                    logger.info("成功收到消息" + message.getText());
+                    MessageHandler.handler(message.getText());
                 } else {
                     break;
                 }
             }
+            logger.info("暂无消息");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
