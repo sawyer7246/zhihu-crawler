@@ -8,9 +8,7 @@ import com.crawl.zhihu.ZhiHuHttpClient;
  * 爬虫入口
  */
 public class Main {
-
     public static void main(String args []){
-        String startURL = Config.startURL;
-        ZhiHuHttpClient.getInstance().startCrawl(startURL);
+        ZhiHuHttpClient.getInstance().startCrawl();
     }
 }

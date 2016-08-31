@@ -4,6 +4,7 @@ import com.crawl.config.Config;
 import com.crawl.dao.ConnectionManage;
 import com.crawl.dao.ZhiHuDAO;
 import com.crawl.httpclient.HttpClient;
+import com.crawl.mq.Receiver;
 import com.crawl.util.ThreadPoolMonitor;
 import com.crawl.zhihu.task.DownloadTask;
 import com.crawl.zhihu.task.ParseTask;
@@ -67,8 +68,13 @@ public class ZhiHuHttpClient extends HttpClient{
                 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>());
     }
-    public void startCrawl(String url){
-        downloadThreadExecutor.execute(new DownloadTask(url));
+    public void startCrawl(){
+        if(Config.distributedEnable){
+            new Thread(new Receiver(Config.queueName)).start();
+        }
+        else {
+            downloadThreadExecutor.execute(new DownloadTask(Config.startURL));
+        }
         manageZhiHuClient();
     }
 

@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
 public class Sender {
     private static Logger logger = MyLogger.getLogger(Sender.class);
     public static void main(String[] args) {
-        sendMessage("test", Config.queueName);
+        sendMessage("https://www.zhihu.com/people/wo-yan-chen-mo/followees", Config.queueName);
     }
     /**
      * @param url 消息内容,待爬取url

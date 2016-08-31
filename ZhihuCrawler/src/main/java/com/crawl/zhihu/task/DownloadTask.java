@@ -12,7 +12,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 下载网页任务
- * 并将下载成功的Page放到解析任务队列
  */
 public class DownloadTask implements Runnable{
 	private static Logger logger = MyLogger.getMyLogger(DownloadTask.class);
@@ -30,11 +29,14 @@ public class DownloadTask implements Runnable{
 
 			logger.info(Thread.currentThread().getName() + " executing request " + page.getUrl() + "   status:" + status);
 			if(status == HttpStatus.SC_OK){
+				/**
+				 * 下载成功，将网页内容放到解析线程池，等待解析
+				 */
 				zhiHuHttpClient.getParseThreadExecutor().execute(new ParseTask(page));
 			}
 			else if(status == 502 || status == 504 || status == 500 || status == 429){
 				/**
-				 * 将请求继续加入线程池
+				 * 将请求继续加入下载线程池
                  */
 				Thread.sleep(100);
 				zhiHuHttpClient.getDownloadThreadExecutor().execute(new DownloadTask(url));

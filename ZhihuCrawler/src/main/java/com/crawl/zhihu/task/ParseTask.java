@@ -50,21 +50,15 @@ public class ParseTask implements Runnable {
             }
             parseUserCount.incrementAndGet();
             logger.info("解析用户成功:" + u.toString());
+            /**
+             * 获取关注用户列表,知乎每次最多返回20个关注用户
+             */
             for(int i = 0;i < u.getFollowees()/20 + 1;i++) {
                 /**
-                 * 获取关注用户
+                 * 获取关注用户列表页url
                  */
                 String userFolloweesUrl = formatUserFolloweesUrl(20*i, u.getHashId());
-                /**
-                 * 当下载网页队列小于100时才获取该用户关注用户
-                 * 防止下载网页线程池任务队列过量增长
-                 */
-                if (!isStopDownload && zhiHuHttpClient.getDownloadThreadExecutor().getQueue().size() <= 100) {
-                    /**
-                     * 获取关注用户列表,因为知乎每次最多返回20个关注用户
-                     */
-                    handleUrl(userFolloweesUrl);
-                }
+                handleUrl(userFolloweesUrl);
             }
         }
         else {
@@ -85,19 +79,46 @@ public class ParseTask implements Runnable {
         return url;
     }
     private void handleUrl(String url){
+        /**
+         * 不持久化到数据库
+         */
         if(!Config.dbEnable){
-            zhiHuHttpClient.getDownloadThreadExecutor().execute(new DownloadTask(url));
+            /**
+             * 当下载网页队列小于100时才获取该用户关注用户
+             * 防止下载网页线程池任务队列过量增长
+             */
+            if (!isStopDownload && zhiHuHttpClient.getDownloadThreadExecutor().getQueue().size() <= 100) {
+                zhiHuHttpClient.getDownloadThreadExecutor().execute(new DownloadTask(url));
+            }
+
             return ;
         }
-        String md5Url = Md5Util.Convert2Md5(url);
-        boolean isRepeat = ZhiHuDAO.insertHref(md5Url);
-        if(!isRepeat ||
-                (!zhiHuHttpClient.getDownloadThreadExecutor().isShutdown() &&
-                        zhiHuHttpClient.getDownloadThreadExecutor().getQueue().size() < 30)){
+        /**
+         * 持久化到数据库
+         */
+        else {
+            String md5Url = Md5Util.Convert2Md5(url);
             /**
-             * 防止互相等待，导致死锁
+             * 该url是已经download
              */
-            zhiHuHttpClient.getDownloadThreadExecutor().execute(new DownloadTask(url));
+            boolean isRepeat = ZhiHuDAO.insertHref(md5Url);
+            if(!Config.distributedEnable){
+                if(!isRepeat ||
+                        (!zhiHuHttpClient.getDownloadThreadExecutor().isShutdown() &&
+                                zhiHuHttpClient.getDownloadThreadExecutor().getQueue().size() < 30)){
+                    /**
+                     * 防止互相等待，导致死锁
+                     */
+                    zhiHuHttpClient.getDownloadThreadExecutor().execute(new DownloadTask(url));
+                }
+            }
+            /**
+             * 分布式处理，发送url到消息队列
+             */
+            else {
+
+                Sender.sendMessage(url, Config.queueName);
+            }
         }
     }
 }

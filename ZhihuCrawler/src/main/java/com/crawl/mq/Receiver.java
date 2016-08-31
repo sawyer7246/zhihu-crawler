@@ -12,13 +12,17 @@ import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.log4j.Logger;
 
-public class Receiver {
+public class Receiver implements Runnable{
     public static Logger logger = MyLogger.getMyLogger(Receiver.class);
+    private String queueName;
+    public Receiver(String queueName){
+        this.queueName = queueName;
+    }
     public static void main(String[] args) {
-        receiverMessage(Config.queueName);
+        new Receiver(Config.queueName).receiverMessage(Config.queueName);
 
     }
-    public static void receiverMessage(String queueName){
+    private void receiverMessage(String queueName){
         // Connection ：JMS 客户端到JMS Provider 的连接
         Connection connection = null;
         // Session： 一个发送或接收消息的线程
@@ -56,5 +60,10 @@ public class Receiver {
             } catch (Throwable ignore) {
             }
         }
+    }
+
+    @Override
+    public void run() {
+        receiverMessage(queueName);
     }
 }
