@@ -150,6 +150,23 @@ public class ZhiHuDAO {
     }
 
     /**
+     * 直接插入url
+     * @param md5Href
+     */
+    public static void insert(Connection cn, String md5Href){
+        try {
+            String sql = "insert into href (href) values( ?)";
+            PreparedStatement pstmt;
+            pstmt = cn.prepareStatement(sql);
+            pstmt.setString(1,md5Href);
+            pstmt.executeUpdate();
+            pstmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        logger.info("url插入成功---");
+    }
+    /**
      * 清空表
      * @param cn
      * @throws SQLException

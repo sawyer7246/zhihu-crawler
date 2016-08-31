@@ -10,16 +10,14 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 public class MessageHandler {
     public static void handler(String content){
-        ThreadPoolExecutor tpe = ZhiHuHttpClient.getInstance().getDownloadThreadExecutor();
+        ThreadPoolExecutor downloadThreadExecutor = ZhiHuHttpClient.getInstance().getDownloadThreadExecutor();
+        ThreadPoolExecutor parseThreadExecutor = ZhiHuHttpClient.getInstance().getParseThreadExecutor();
         while (true){
-            /**
-             * 添加下载任务到线程池
-             */
-            tpe.execute(new DownloadTask(content));
-            if(tpe.getQueue().size() > 50){
+            if(downloadThreadExecutor.getQueue().size() > 50 ||
+                    parseThreadExecutor.getQueue().size() > 50){
                 /**
-                 * 下载线程池任务队列size大于50
-                 * 暂停接收消息
+                 * 下载线程池任务队列或解析线程池任务队列size大于50
+                 * 暂时不处理消息
                  */
                 try {
                     Thread.sleep(1000);
@@ -28,6 +26,10 @@ public class MessageHandler {
                 }
             }
             else {
+                /**
+                 * 添加下载任务到线程池
+                 */
+                downloadThreadExecutor.execute(new DownloadTask(content));
                 break;
             }
         }

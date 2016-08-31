@@ -15,6 +15,8 @@ import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -53,13 +55,15 @@ public class ParseTask implements Runnable {
             /**
              * 获取关注用户列表,知乎每次最多返回20个关注用户
              */
+            List<String> userIndexHref = new ArrayList<String>(u.getFollowees());
             for(int i = 0;i < u.getFollowees()/20 + 1;i++) {
                 /**
                  * 获取关注用户列表页url
                  */
                 String userFolloweesUrl = formatUserFolloweesUrl(20*i, u.getHashId());
-                handleUrl(userFolloweesUrl);
+                userIndexHref.add(userFolloweesUrl);
             }
+            handleListUrl(userIndexHref);
         }
         else {
             /**
@@ -67,9 +71,7 @@ public class ParseTask implements Runnable {
              */
             if(!isStopDownload && zhiHuHttpClient.getDownloadThreadExecutor().getQueue().size() <= 100){
                 List<String> userIndexHref = ZhiHuUserFollowingListPageParser.getInstance().parse(page);
-                for(String url : userIndexHref){
-                    handleUrl(url);
-                }
+                handleListUrl(userIndexHref);
             }
         }
     }
@@ -116,9 +118,16 @@ public class ParseTask implements Runnable {
              * 分布式处理，发送url到消息队列
              */
             else {
-
                 Sender.sendMessage(url, Config.queueName);
             }
         }
+    }
+    private void handleListUrl(List<String> urlList){
+        Connection cn = ConnectionManage.getConnection();
+        for(String url : urlList){
+            String md5Url = Md5Util.Convert2Md5(url);
+            ZhiHuDAO.insert(cn, md5Url);
+        }
+        ConnectionManage.close();
     }
 }

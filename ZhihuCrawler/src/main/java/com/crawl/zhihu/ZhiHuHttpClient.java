@@ -84,6 +84,9 @@ public class ZhiHuHttpClient extends HttpClient{
      * 负责正常关闭
      */
     public void manageZhiHuClient(){
+        if(Config.distributedEnable){
+            return;
+        }
         while (true) {
             /**
              * 下载网页数
