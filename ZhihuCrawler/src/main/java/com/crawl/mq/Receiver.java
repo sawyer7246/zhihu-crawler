@@ -19,7 +19,7 @@ public class Receiver implements Runnable{
         this.queueName = queueName;
     }
     public static void main(String[] args) {
-        new Receiver(Config.queueName).receiverMessage(Config.queueName);
+        new Receiver(Config.userDetailUrlQueueName).receiverMessage(Config.userDetailUrlQueueName);
 
     }
     private void receiverMessage(String queueName){

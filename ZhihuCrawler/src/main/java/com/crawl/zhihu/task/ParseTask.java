@@ -118,7 +118,7 @@ public class ParseTask implements Runnable {
              * 分布式处理，发送url到消息队列
              */
             else {
-                Sender.sendMessage(url, Config.queueName);
+                Sender.sendMessage(url, Config.userDetailUrlQueueName);
             }
         }
     }

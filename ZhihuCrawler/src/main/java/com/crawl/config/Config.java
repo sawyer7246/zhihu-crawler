@@ -62,7 +62,8 @@ public class Config {
     public static String createUserTable;
     public static boolean distributedEnable;
     public static String brokerURL;
-    public static String queueName;
+    public static String userDetailUrlQueueName;
+    public static String userFolloweeUrlQueueName;
     static {
         Properties p = new Properties();
         try {
@@ -88,7 +89,8 @@ public class Config {
         }
         if (distributedEnable){
             brokerURL = p.getProperty("brokerURL");
-            queueName = p.getProperty("queueName");
+            userDetailUrlQueueName = p.getProperty("userDetailUrlQueueName");
+            userFolloweeUrlQueueName = p.getProperty("userFolloweeUrlQueueName");
         }
     }
 

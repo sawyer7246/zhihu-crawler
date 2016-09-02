@@ -71,7 +71,7 @@ public class ZhiHuHttpClient extends HttpClient{
     }
     public void startCrawl(){
         if(Config.distributedEnable){
-            new Thread(new Receiver(Config.queueName)).start();
+            new Thread(new Receiver(Config.userDetailUrlQueueName)).start();
         }
         else {
             downloadThreadExecutor.execute(new DownloadTask(Config.startURL));
