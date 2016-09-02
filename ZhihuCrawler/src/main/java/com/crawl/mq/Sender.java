@@ -11,11 +11,15 @@ import javax.jms.Destination;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+import javax.management.MBeanServerInvocationHandler;
+import javax.management.ObjectName;
 
 import com.crawl.config.Config;
 import com.crawl.util.MyLogger;
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.broker.jmx.BrokerViewMBean;
+import org.apache.activemq.broker.jmx.QueueViewMBean;
 import org.apache.log4j.Logger;
 
 public class Sender {

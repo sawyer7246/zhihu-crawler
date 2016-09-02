@@ -6,21 +6,17 @@ package com.crawl.mq;
  */
 import javax.jms.*;
 
-import com.crawl.config.Config;
+import com.crawl.mq.handler.MessageHandler;
 import com.crawl.util.MyLogger;
-import org.apache.activemq.ActiveMQConnection;
-import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.log4j.Logger;
 
 public class Receiver implements Runnable{
     public static Logger logger = MyLogger.getMyLogger(Receiver.class);
     private String queueName;
-    public Receiver(String queueName){
+    private MessageHandler messageHandler;
+    public Receiver(String queueName, MessageHandler messageHandler){
+        this.messageHandler = messageHandler;
         this.queueName = queueName;
-    }
-    public static void main(String[] args) {
-        new Receiver(Config.userDetailUrlQueueName).receiverMessage(Config.userDetailUrlQueueName);
-
     }
     private void receiverMessage(String queueName){
         // Connection ：JMS 客户端到JMS Provider 的连接
@@ -45,7 +41,7 @@ public class Receiver implements Runnable{
                 TextMessage message = (TextMessage) consumer.receive(10000);
                 if (null != message) {
                     logger.info("成功收到消息" + message.getText());
-                    MessageHandler.handler(message.getText());
+                    messageHandler.handler(message.getText());
                 } else {
                     break;
                 }

@@ -71,7 +71,9 @@ public class ParseTask implements Runnable {
              */
             if(!isStopDownload && zhiHuHttpClient.getDownloadThreadExecutor().getQueue().size() <= 100){
                 List<String> userIndexHref = ZhiHuUserFollowingListPageParser.getInstance().parse(page);
-                handleListUrl(userIndexHref);
+                for(String s : userIndexHref){
+                    handleUrl(s);
+                }
             }
         }
     }
@@ -127,6 +129,10 @@ public class ParseTask implements Runnable {
         for(String url : urlList){
             String md5Url = Md5Util.Convert2Md5(url);
             ZhiHuDAO.insert(cn, md5Url);
+            /**
+             * 用户关注列表页url
+             */
+            Sender.sendMessage(url, Config.userFolloweeUrlQueueName);
         }
         ConnectionManage.close();
     }
