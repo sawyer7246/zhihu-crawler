@@ -36,12 +36,12 @@ public class ZhiHuUserIndexDetailPageParser extends DetailPageParser{
      */
     private User parseUserdetail(Document doc){
         User u = new User();
-        u.setLocation(getUserinfo(doc,"location"));//位置
+        u.setLocation(getUserinfo(doc,"居住地"));//位置
         u.setBusiness(getUserinfo(doc,"business"));//行业
         u.setEmployment(getUserinfo(doc,"employment"));//企业
-        u.setPosition(getUserinfo(doc,"position"));//职位
-        u.setEducation(getUserinfo(doc,"education"));//教育
-        u.setUsername(doc.select(".title-section a").first().text());//用户名
+        u.setPosition(getUserinfo(doc,"职业经历"));//职位
+        u.setEducation(getUserinfo(doc,"教育经历"));//教育
+        u.setUsername(doc.select(".ProfileHeader-name").text());//用户名
         u.setUrl("https://www.zhihu.com" + doc.select(".title-section a").first().attr("href"));//用户首页链接
         u.setAgrees(Integer.valueOf(doc.select(".zm-profile-header-user-agree strong").first().text()));//赞同数
         u.setThanks(Integer.valueOf(doc.select(".zm-profile-header-user-thanks strong").first().text()));//感谢数
@@ -71,11 +71,8 @@ public class ZhiHuUserIndexDetailPageParser extends DetailPageParser{
      * @return
      */
     private String getUserinfo(Document doc,String infoName){
-        Element e = doc.select(".zm-profile-header-user-describe ." + infoName + ".item").first();
-        if(e == null){
-            return "";
-        } else{
-            return e.attr("title");
-        }
+        String e = doc.select("span:contains()"+infoName+" .ProfileHeader-detailLabel").text();
+        return  e;
+       
     }
 }

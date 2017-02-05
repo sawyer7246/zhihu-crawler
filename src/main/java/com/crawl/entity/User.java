@@ -3,7 +3,7 @@ package com.crawl.entity;
 /**
  * 知乎用户资料
  */
-public class User {
+public class User  implements Comparable {
     //位置
     private String location;
     //行业
@@ -186,4 +186,45 @@ public class User {
                 ", hashId='" + hashId + '\'' +
                 '}';
     }
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((hashId == null) ? 0 : hashId.hashCode());
+		result = prime * result + ((url == null) ? 0 : url.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		User other = (User) obj;
+		if (hashId == null) {
+			if (other.hashId != null)
+				return false;
+		} else if (!hashId.equals(other.hashId))
+			return false;
+		if (url == null) {
+			if (other.url != null)
+				return false;
+		} else if (!url.equals(other.url))
+			return false;
+		return true;
+	}
+
+	@Override
+	public int compareTo(Object o) {
+		if(o == null) return 0 ;
+		User user = (User)o;
+	    return(user.getFollowers()-this.getFollowers()); 
+	}
+    
+    
+    
 }

@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='utf-8' ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	</head>
+	<body>
+		<h1 id="h1-1">﻿知乎爬虫</h1>
+		<p>2.0版本,和1.0版本有很大的不一样<br>
+			为啥会更新呢，1.0版本的代码写的比较乱，重构了下。该分支已删除<br>
+			暂时还没有加新功能，2.0版本运行非常简单，直接配置。<br></p>
+		<h2 id="maven">工程导入(maven)</h2>
+		<ul>
+			<li>git clone https://github.com/wycm/zhihu-crawler 克隆项目到本地 </li>
+			<li>
+				<strong>eclipse</strong>导入步骤(eclipse_kepler版本，自带maven)，File-&gt;Import-&gt;Maven-&gt;Existing Maven Projects-&gt;选择刚刚clone的zhihu-crawler目录-&gt;导入成功
+			</li>
+			<li>
+				<strong>idea</strong>导入步骤,File-&gt;Open-&gt;选择刚刚clone的zhihu-crawler目录-&gt;导入成功
+			</li>
+		</ul>
+		<h2 id="maven2">工程导入(不使用maven)</h2>
+		<ul>
+			<li>eclipse或myeclipse都可以</li>
+			<li>git clone https://github.com/wycm/zhihu-crawler 克隆项目到本地</li>
+			<li>创建一个名字为zhihu-new-crawler（这个随便命名）的普通工程</li>
+			<li>拷贝刚刚clone的zhihu-crawler/src/main/java/com目录到zhihu-new-crawler/src目录下</li>
+			<li>右键工程-&gt;Build Path-&gt;Add External Archives...-&gt;导入zhihu-crawler/lib下的所有jar包</li>
+			<li>将zhihu-crawler/src/main/resources目录下的
+				<a href="https://github.com/wycm/zhihu-crawler/blob/2.0/src/main/resources/config.properties">config.properties</a>和
+				<a href="https://github.com/wycm/zhihu-crawler/blob/2.0/src/main/resources/log4j.properties">log4j.properties</a>拷贝至src目录下
+			</li>
+			<li>修改
+				<a href="https://github.com/wycm/zhihu-crawler/blob/2.0/src/main/resources/config.properties">config.properties</a>的以下两个属性:
+			</li>
+		</ul>
+		<pre><code>    #验证码path
+    #verificationCodePath = src/zhiHuYZM.gif
+    # Cookie path
+    #cookiePath = src/zhihucookies</code></pre>
+		<h2 id="start">start</h2>
+		<p>1.配置 
+			<a href="https://github.com/wycm/zhihu-crawler/blob/2.0/src/main/resources/config.properties">config.properties</a> 文件,账号密码<br>
+			2.Run with 
+			<a href="https://github.com/wycm/zhihu-crawler/blob/2.0/src/main/java/com/crawl/Main.java">Main.java</a> <br>
+			3.首次运行，会模拟登录，需要手动输入验证码，登录成功后，会自动序列化Cookie到
+			<a href="https://github.com/wycm/mycrawler/blob/2.0/ZhihuCrawler/src/main/resources">resources</a>,以后都可以不用登录。
+		</p>
+		<h2 id="h2-4">注意</h2>
+		<p>由于知乎现在有反爬虫机制，如果访问频繁账号会封禁一段时间，不过可以通过发送邮件的方式手动解封的。
+			跑5个下载线程就账号可能被封。
+			现在默认下载线程数是2，可以通过 
+			<a href="https://github.com/wycm/zhihu-crawler/tree/2.0/src/main/resources">config.properties</a> 配置文件的
+			<code>downloadThreadSize</code>来修改。
+			最好还是注册一个小号来跑吧。如果确实追求效率，那就多注册几个账号跑吧。
+		</p>
+		<h2 id="todo">TODO</h2>
+		<p>...</p>
+		<h2 id="h2-6">问题</h2>
+		<p>有什么疑问，欢迎提出来</p>
+	</body>
+</html>

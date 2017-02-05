@@ -12,8 +12,9 @@ import org.apache.log4j.Logger;
  */
 public class Main {
     private static Logger logger = SimpleLogger.getLogger(Main.class);
+
     public static void main(String args []){
-        String startURL = Config.startURL;
+        String startURL = "https://www.zhihu.com/people/"+Config.startURL+"/activities";
         ZhiHuHttpClient.getInstance().startCrawl(startURL);
     }
 }

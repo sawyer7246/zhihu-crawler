@@ -1,6 +1,8 @@
 package com.crawl.zhihu;
 
+import com.crawl.cache.UserCache;
 import com.crawl.config.Config;
+import com.crawl.cst.PageType;
 import com.crawl.dao.ConnectionManage;
 import com.crawl.dao.ZhiHuDAO;
 import com.crawl.httpclient.HttpClient;
@@ -67,8 +69,19 @@ public class ZhiHuHttpClient extends HttpClient{
                 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>());
     }
+    
+    //TODO
+    static private String followingURL = "https://www.zhihu.com/api/v4/members/"
+    		+ "sawyer-nick/"
+    		+ "followees?include=data%5B*%5D.answer_count%2Carticles_count%2Cfollower_count%2"
+    		+ "Cis_followed%2Cis_following%2Cbadge%5B%3F(type%3Dbest_answerer)%5D.topics&offset=0&limit=20";
+    
+    
     public void startCrawl(String url){
-        downloadThreadExecutor.execute(new DownloadTask(url));
+    	//爬联系人 写ConcurrentQueue 读到一个入栈一个 循环往复 记录差异日志(HashSet)
+    	downloadThreadExecutor.execute(new DownloadTask(followingURL,PageType.following));
+    	//爬最新动态 始终从队列中读取一条关注人去读最新的动态 先从自己开始
+        downloadThreadExecutor.execute(new DownloadTask(url,PageType.Activities));
         manageZhiHuClient();
     }
 
@@ -103,7 +116,7 @@ public class ZhiHuHttpClient extends HttpClient{
                  */
                 ThreadPoolMonitor.isStopMonitor = true;
                 logger.info("--------------爬取结果--------------");
-                logger.info("获取用户数:" +ParseTask.parseUserCount.get());
+                logger.info("获取用户数:" +UserCache.set.size());
                 break;
             }
             try {
